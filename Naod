@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Claim $50</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #eef4ff, #ffffff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 30px 22px;
+      text-align: center;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 28px;
+    }
+
+    p {
+      margin: 0 0 24px;
+      color: #555;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .permission {
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    button {
+      width: 100%;
+      min-height: 52px;
+      border: none;
+      border-radius: 12px;
+      background: #1769ff;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    #status {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #555;
+      min-height: 20px;
+    }
+
+    @media (max-width: 360px) {
+      .card {
+        padding: 24px 18px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+
+      button {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="card">
+
+    <h2>Side Income</h2>
+
+    <p>
+      Welcome! Press the button below to continue.
+    </p>
+
+    <div class="permission">
+      📍 Your browser will ask for location permission.
+      Your location is accessed only if you choose
+      <strong>Allow</strong>.
+    </div>
+
+    <button id="locationButton" onclick="shareLocation()">
+      Welcome
+    </button>
+
+    <div id="status"></div>
+
+  </main>
+
+  <script>
+    function shareLocation() {
+
+      const button = document.getElementById("locationButton");
+      const status = document.getElementById("status");
+
+      if (!navigator.geolocation) {
+        status.textContent =
+          "Geolocation is not supported by this browser.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Requesting permission...";
+
+      status.textContent =
+        "Please choose Allow if you want to share your location.";
+
+      navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          const map =
+            "https://www.google.com/maps?q=" +
+            encodeURIComponent(lat + "," + lon);
+
+          status.textContent =
+            "Location permission granted. Opening Google Maps...";
+
+          window.location.href = map;
+        },
+
+        function(error) {
+
+          button.disabled = false;
+          button.textContent = "Welcome";
+
+          if (error.code === error.PERMISSION_DENIED) {
+            status.textContent =
+              "Location permission was not granted.";
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            status.textContent =
+              "Your location is currently unavailable.";
+          } else if (error.code === error.TIMEOUT) {
+            status.textContent =
+              "Location request timed out. Please try again.";
+          } else {
+            status.textContent =
+              "Unable to get your location.";
+          }
+        },
+
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }
+  </script>
+
+</body>
+</html>
